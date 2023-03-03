@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"runtime"
 
 	"github.com/cli/go-gh"
 )
@@ -13,13 +14,15 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	response := struct {Login string}{}
+	response := struct{ Login string }{}
 	err = client.Get("user", &response)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	fmt.Printf("running as %s\n", response.Login)
+	fmt.Printf("arch is %s\n", runtime.GOARCH)
+	fmt.Printf("arch is %s\n", runtime.GOOS)
 }
 
 // For more examples of using go-gh, see:
