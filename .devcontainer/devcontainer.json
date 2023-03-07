@@ -1,7 +1,14 @@
 {
-	"name": "Go",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"name": "GH-Runner",
 	"image": "mcr.microsoft.com/devcontainers/go:0-1-bullseye",
+	"customizations":{
+		"vscode": {
+			"extensions": [
+				"golang.go"
+			]
+		}
+	},
+
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {
 			"version": "latest"

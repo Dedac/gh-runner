@@ -1,3 +1,5 @@
 /gh-runner
 /gh-runner.exe
 *.tar.gz
+*.zip
+/actions-runner

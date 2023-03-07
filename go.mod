@@ -2,7 +2,11 @@ module github.com/Dedac/gh-runner
 
 go 1.20
 
-require github.com/cli/go-gh v1.2.1
+require (
+	github.com/artyom/untar v1.0.1
+	github.com/cli/go-gh v1.2.1
+	github.com/evilsocket/islazy v1.11.0
+)
 
 require (
 	github.com/cli/safeexec v1.0.0 // indirect
@@ -16,7 +20,7 @@ require (
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/thlib/go-timezone-local v0.0.0-20210907160436-ef149e42d28e // indirect
 	golang.org/x/net v0.7.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/term v0.5.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
