@@ -1,5 +1,6 @@
 /gh-runner
 /gh-runner.exe
+__debug_bin
 *.tar.gz
 *.zip
 /actions-runner
