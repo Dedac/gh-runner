@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func Download(fileName string, url string) error {
+func Download(fileName string, url string) {
 	file, err := os.Create(fileName)
 	if err != nil {
 		log.Fatal(err)
@@ -30,5 +30,4 @@ func Download(fileName string, url string) error {
 	defer file.Close()
 
 	fmt.Printf("Downloaded a file %s with size %d\n", fileName, size)
-	return err
 }
