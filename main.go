@@ -70,11 +70,29 @@ func _main() error {
 		},
 	}
 
+	serviceStartCmd := &cobra.Command{
+		Use:   "serviceStart",
+		Short: "create a service (and start it) on this machine to keep the runner running",
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			runService(*name)
+			return
+		},
+	}
+
 	serviceStopCmd := &cobra.Command{
 		Use:   "serviceStop",
 		Short: "Stop the runner configured on this machine",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			stopService(*name)
+			return
+		},
+	}
+
+	serviceRemoveCmd := &cobra.Command{
+		Use:   "serviceRemove",
+		Short: "Remove the service configured on this machine, ",
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			removeService(*name)
 			return
 		},
 	}
@@ -92,7 +110,9 @@ func _main() error {
 	rootCmd.AddCommand(stopCmd)
 	rootCmd.AddCommand(removeCmd)
 	rootCmd.AddCommand(serviceCmd)
+	rootCmd.AddCommand(serviceStartCmd)
 	rootCmd.AddCommand(serviceStopCmd)
+	rootCmd.AddCommand(serviceRemoveCmd)
 
 	return rootCmd.Execute()
 }

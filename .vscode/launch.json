@@ -10,7 +10,7 @@
             "request": "launch",
             "mode": "auto",
             "program": ".",
-            "args": []
+            "args": ["create"]
         },
         {
             "name": "Skip Download",
@@ -18,7 +18,7 @@
             "request": "launch",
             "mode": "auto",
             "program": ".",
-            "args": ["-skip-download"]
+            "args": ["create", "-skip-download"]
         },
         {  
             "name": "Named, Grouped, and Labeled",
@@ -26,7 +26,7 @@
             "request": "launch",
             "mode": "auto",
             "program": ".",
-            "args": ["-name", "myname", "-group", "samplegroup", "-labels", "temp,gh-runner"]
+            "args": ["create","-name", "myname", "-group", "samplegroup", "-labels", "temp,gh-runner"]
         }, 
         {  
             "name": "Org",
@@ -34,7 +34,7 @@
             "request": "launch",
             "mode": "auto",
             "program": ".",
-            "args": ["-org", "octodemo", "-name", "org-level-runner", "-group", "samplegroup", "-labels", "temp,gh-runner"]
+            "args": ["create", "-org", "octodemo", "-name", "org-level-runner", "-group", "samplegroup", "-labels", "temp,gh-runner"]
         },
         {
             "name": "Remove",
@@ -42,7 +42,15 @@
             "request": "launch",
             "mode": "auto",
             "program": ".",
-            "args": ["-remove"]
+            "args": ["remove"]
+        },
+        {
+            "name": "Stop",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": ".",
+            "args": ["stop"]
         }
     ]
 }
