@@ -31,12 +31,12 @@ func ExtractToFolder(fileName string, folderName string) {
 	} else {
 		zip.Unzip(fileName, folderName)
 	}
-	fmt.Printf("Extracted file %s to actions-runner directory", fileName)
+	fmt.Printf("Extracted file %s to actions-runner directory \n", fileName)
 
 	// remove the compressed file
 	err := os.Remove(fileName)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("Removed file %s", fileName)
+	fmt.Printf("Removed file %s \n", fileName)
 }

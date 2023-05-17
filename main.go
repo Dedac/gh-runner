@@ -1,95 +1,104 @@
 package main
 
 import (
-	"flag"
 	"fmt"
-	"log"
 	"os"
-	"os/exec"
 
-	"github.com/cli/go-gh"
-	"github.com/cli/go-gh/pkg/repository"
+	"github.com/cli/go-gh/v2/pkg/repository"
+	"github.com/spf13/cobra"
 )
 
-func main() {
-	repoOverride := flag.String("repo", "", "Repository to add the runner to. Defaults to the current repository")
-	orgOverride := flag.String("org", "", "Organization to add the runner to")
-	entOverride := flag.String("enterprise", "", "Enterprise to add the runner to")
-	labels := flag.String("labels", "", "Comma-separated list of labels to add to the runner")
-	name := flag.String("name", "actions-runner", "Name of the runner, creates a folder and a runner with this name, defualts to 'actions-runner'")
-	group := flag.String("group", "", "Runner group to add the runner to, defaults to 'Default'")
-	remove := flag.Bool("remove", false, "Remove the existing configured runner")
-	skipDownload := flag.Bool("skip-download", false, "Skip downloading the runner binary, because you already have one extracted")
-	flag.Parse()
-
+func _main() error {
 	var repo repository.Repository
-	folderName := *name
-	var org string
-	var ent string
 	var URL string
-	var err error
-
-	if *repoOverride == "" {
-		repo, err = gh.CurrentRepository()
-		URL = fmt.Sprintf("https://%s/%s/%s", repo.Host(), repo.Owner(), repo.Name())
-	} else {
-		repo, err = repository.Parse(*repoOverride)
+	var name *string
+	rootCmd := &cobra.Command{
+		Use:   "runner <subcommand> [flags]",
+		Short: "gh runner",
 	}
-	if err != nil {
-		fmt.Println("could not determine repository to query: %w", err)
+	repoOverride := rootCmd.PersistentFlags().StringP("repo", "R", "", "Repository to use in OWNER/REPO format")
+	name = rootCmd.PersistentFlags().StringP("name", "N", "actions-runner", "Name of the runner, creates a folder and a runner with this name, defualts to 'actions-runner'")
+
+	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) (err error) {
+		if *repoOverride != "" {
+			repo, err = repository.Parse(*repoOverride)
+		} else {
+			repo, err = repository.Current()
+		}
+		URL = fmt.Sprintf("https://%s/%s/%s", repo.Host, repo.Owner, repo.Name)
 		return
 	}
 
-	if *orgOverride != "" {
-		org = *orgOverride
-		URL = fmt.Sprintf("https://%s/%s", repo.Host(), org)
+	createCmd := &cobra.Command{
+		Use:   "create [<options>]",
+		Short: "Create a new runner with the given options",
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			runCreate(cmd, repo, false, *name, URL)
+			return
+		},
+	}
+	createCmd.Flags().StringP("org", "o", "", "Add the runner at the Organization level with the organization's name")
+	createCmd.Flags().StringP("enterprise", "e", "", "Add the runner at the Enterprise level with the enterprise's name")
+	createCmd.Flags().StringP("labels", "l", "", "Comma-separated list of labels to add to the runner")
+	createCmd.Flags().StringP("group", "g", "", "Runner group to add the runner to, defaults to 'Default'")
+	createCmd.Flags().BoolP("skip-download", "s", false, "Skip downloading the runner binary, because you already have one extracted in the current directory")
+
+	startCmd := &cobra.Command{
+		Use:   "start",
+		Short: "Start an already configured runner",
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			runStart(*name)
+			return
+		},
 	}
 
-	if *entOverride != "" {
-		ent = *entOverride
-		URL = fmt.Sprintf("https://%s/enterprises/%s", repo.Host(), ent)
+	stopCmd := &cobra.Command{
+		Use:   "stop",
+		Short: "Stop a runner that is currently running",
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			runStop(*name)
+			return
+		},
 	}
 
-	if !*remove && !*skipDownload {
-		// Get the correct runner for the current platform
-		fileName, url := FindRunner()
-		Download(fileName, url)
-		ExtractToFolder(fileName, folderName)
+	serviceCmd := &cobra.Command{
+		Use:   "service",
+		Short: "create a service (and start it) on this machine to keep the runner running",
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			createService(*name)
+			return
+		},
 	}
 
-	err = os.Chdir(folderName)
-	if err != nil {
-		log.Fatal(err)
+	serviceStopCmd := &cobra.Command{
+		Use:   "serviceStop",
+		Short: "Stop the runner configured on this machine",
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			stopService(*name)
+			return
+		},
 	}
 
-	token := GetToken(repo, org, "", *remove)
-
-	var args []string
-	if *remove {
-		args = []string{"remove", "--token", token}
-	} else {
-		args = []string{"--url", URL, "--token", token, "--name", *name, "--unattended"}
-		if *labels != "" {
-			args = append(args, "--labels", *labels)
-		}
-		if *group != "" {
-			args = append(args, "--runnergroup", *group)
-		}
-	}
-	cmd := exec.Command("./config.sh", args...)
-
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err = cmd.Run()
-	if err != nil {
-		log.Fatal(err)
+	removeCmd := &cobra.Command{
+		Use:   "remove",
+		Short: "Remove configuration and runner",
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			return runCreate(cmd, repo, true, *name, URL)
+		},
 	}
 
-	runcmd := exec.Command("./run.sh")
-	runcmd.Stdout = os.Stdout
-	runcmd.Stderr = os.Stderr
-	err = runcmd.Start()
-	if err != nil {
-		log.Fatal(err)
+	rootCmd.AddCommand(createCmd)
+	rootCmd.AddCommand(startCmd)
+	rootCmd.AddCommand(stopCmd)
+	rootCmd.AddCommand(removeCmd)
+	rootCmd.AddCommand(serviceCmd)
+	rootCmd.AddCommand(serviceStopCmd)
+
+	return rootCmd.Execute()
+}
+
+func main() {
+	if err := _main(); err != nil {
+		fmt.Fprintf(os.Stderr, "X %s \n", err.Error())
 	}
 }

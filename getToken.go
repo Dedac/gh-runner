@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/cli/go-gh"
-	"github.com/cli/go-gh/pkg/repository"
+	"github.com/cli/go-gh/v2/pkg/repository"
 )
 
 // get the registration token from gh api
@@ -18,7 +18,7 @@ func GetToken(repo repository.Repository, org string, ent string, remove bool) (
 		tokenType = "registration-token"
 	}
 
-	location := fmt.Sprintf("repos/%s/%s", repo.Owner(), repo.Name())
+	location := fmt.Sprintf("repos/%s/%s", repo.Owner, repo.Name)
 	if org != "" {
 		location = fmt.Sprintf("orgs/%s/", org)
 	}
