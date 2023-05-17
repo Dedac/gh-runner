@@ -3,12 +3,14 @@ package main
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/cli/go-gh"
+	"github.com/cli/go-gh/pkg/repository"
 )
 
 // get the registration token from gh api
-func GetToken(repo string, org string, ent string, remove bool) (token string) {
+func GetToken(repo repository.Repository, org string, ent string, remove bool) (token string) {
 	var tokenType string
 	if remove {
 		tokenType = "remove-token"
@@ -16,7 +18,7 @@ func GetToken(repo string, org string, ent string, remove bool) (token string) {
 		tokenType = "registration-token"
 	}
 
-	location := fmt.Sprintf("repos/%s/", repo)
+	location := fmt.Sprintf("repos/%s/%s", repo.Owner(), repo.Name())
 	if org != "" {
 		location = fmt.Sprintf("orgs/%s/", org)
 	}
@@ -26,9 +28,9 @@ func GetToken(repo string, org string, ent string, remove bool) (token string) {
 
 	tokenGenCall := fmt.Sprintf("%s/actions/runners/%s", location, tokenType)
 
-	value, stdErr, err := gh.Exec("api", tokenGenCall, "--jq", ".token")
+	value, stdErr, err := gh.Exec("api", "-X", "POST", tokenGenCall, "--jq", ".token")
 	if err != nil {
 		log.Fatal(stdErr.String()+"/n", err)
 	}
-	return value.String()
+	return strings.Split(value.String(), "\n")[0]
 }

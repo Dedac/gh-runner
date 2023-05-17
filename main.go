@@ -19,6 +19,7 @@ func main() {
 	name := flag.String("name", "actions-runner", "Name of the runner, creates a folder and a runner with this name, defualts to 'actions-runner'")
 	group := flag.String("group", "", "Runner group to add the runner to, defaults to 'Default'")
 	remove := flag.Bool("remove", false, "Remove the existing configured runner")
+	skipDownload := flag.Bool("skip-download", false, "Skip downloading the runner binary, because you already have one extracted")
 	flag.Parse()
 
 	var repo repository.Repository
@@ -49,7 +50,7 @@ func main() {
 		URL = fmt.Sprintf("https://%s/enterprises/%s", repo.Host(), ent)
 	}
 
-	if !*remove {
+	if !*remove && !*skipDownload {
 		// Get the correct runner for the current platform
 		fileName, url := FindRunner()
 		Download(fileName, url)
@@ -61,11 +62,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	token := GetToken(repo.Name(), org, "", *remove)
+	token := GetToken(repo, org, "", *remove)
 
 	var args []string
 	if *remove {
-		args = []string{"remove", "--unattended", "--token", token}
+		args = []string{"remove", "--token", token}
 	} else {
 		args = []string{"--url", URL, "--token", token, "--name", *name, "--unattended"}
 		if *labels != "" {
@@ -80,6 +81,14 @@ func main() {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	runcmd := exec.Command("./run.sh")
+	runcmd.Stdout = os.Stdout
+	runcmd.Stderr = os.Stderr
+	err = runcmd.Start()
 	if err != nil {
 		log.Fatal(err)
 	}

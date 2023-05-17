@@ -5,11 +5,44 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Package",
+            "name": "Basic",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "."
+            "program": ".",
+            "args": []
+        },
+        {
+            "name": "Skip Download",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": ".",
+            "args": ["-skip-download"]
+        },
+        {  
+            "name": "Named, Grouped, and Labeled",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": ".",
+            "args": ["-name", "myname", "-group", "samplegroup", "-labels", "temp,gh-runner"]
+        }, 
+        {  
+            "name": "Org",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": ".",
+            "args": ["-org", "octodemo", "-name", "org-level-runner", "-group", "samplegroup", "-labels", "temp,gh-runner"]
+        },
+        {
+            "name": "Remove",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": ".",
+            "args": ["-remove"]
         }
     ]
 }
