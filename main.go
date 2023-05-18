@@ -17,7 +17,7 @@ func _main() error {
 		Short: "gh runner",
 	}
 	repoOverride := rootCmd.PersistentFlags().StringP("repo", "R", "", "Repository to use in OWNER/REPO format")
-	name = rootCmd.PersistentFlags().StringP("name", "N", "actions-runner", "Name of the runner, creates a folder and a runner with this name, defualts to 'actions-runner'")
+	name = rootCmd.PersistentFlags().StringP("name", "N", "actions-runner", "Name of the runner, creates a folder and a runner with this name, defualts to 'actions-runner' \n When you set a name, you will need to use that name for all subsequent commands commands to that runner")
 
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) (err error) {
 		if *repoOverride != "" {
@@ -45,7 +45,7 @@ func _main() error {
 
 	startCmd := &cobra.Command{
 		Use:   "start",
-		Short: "Start an already configured runner",
+		Short: "Start an already configured runner as a process in your current context",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			runStart(*name)
 			return
@@ -54,7 +54,7 @@ func _main() error {
 
 	stopCmd := &cobra.Command{
 		Use:   "stop",
-		Short: "Stop a runner that is currently running",
+		Short: "Stop runner processes that are currently running in a local process",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			runStop(*name)
 			return
@@ -105,6 +105,8 @@ func _main() error {
 		},
 	}
 
+	removeCmd.Flags().StringP("org", "o", "", "Remove the runner at the Organization level with the organization's name")
+	removeCmd.Flags().StringP("enterprise", "e", "", "Remove the runner at the Enterprise level with the enterprise's name")
 	rootCmd.AddCommand(createCmd)
 	rootCmd.AddCommand(startCmd)
 	rootCmd.AddCommand(stopCmd)

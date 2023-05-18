@@ -55,6 +55,7 @@ func createService(name string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	os.Chdir("..")
 	runService(name)
 }
 
@@ -71,7 +72,6 @@ func runService(name string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 }
 
 func stopService(name string) {

@@ -20,17 +20,17 @@ func GetToken(repo repository.Repository, org string, ent string, remove bool) (
 
 	location := fmt.Sprintf("repos/%s/%s", repo.Owner, repo.Name)
 	if org != "" {
-		location = fmt.Sprintf("orgs/%s/", org)
+		location = fmt.Sprintf("orgs/%s", org)
 	}
 	if ent != "" {
-		location = fmt.Sprintf("enterprises/%s/", ent)
+		location = fmt.Sprintf("enterprises/%s", ent)
 	}
 
 	tokenGenCall := fmt.Sprintf("%s/actions/runners/%s", location, tokenType)
 
-	value, stdErr, err := gh.Exec("api", "-X", "POST", tokenGenCall, "--jq", ".token")
+	value, _, err := gh.Exec("api", "-X", "POST", tokenGenCall, "--jq", ".token")
 	if err != nil {
-		log.Fatal(stdErr.String()+"/n", err)
+		log.Fatal(err)
 	}
 	return strings.Split(value.String(), "\n")[0]
 }

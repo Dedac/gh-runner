@@ -26,7 +26,7 @@
             "request": "launch",
             "mode": "auto",
             "program": ".",
-            "args": ["create","-name", "myname", "-group", "samplegroup", "-labels", "temp,gh-runner"]
+            "args": ["create","-N", "myname", "-group", "samplegroup", "--labels", "temp,gh-runner"]
         }, 
         {  
             "name": "Org",
@@ -34,7 +34,7 @@
             "request": "launch",
             "mode": "auto",
             "program": ".",
-            "args": ["create", "-org", "octodemo", "-name", "org-level-runner", "-group", "samplegroup", "-labels", "temp,gh-runner"]
+            "args": ["create", "--org", "octodemo", "-N", "org-level-runner", "--labels", "temp,gh-runner"]
         },
         {
             "name": "Remove",
@@ -42,7 +42,7 @@
             "request": "launch",
             "mode": "auto",
             "program": ".",
-            "args": ["remove"]
+            "args": ["remove", "-N", "org-level-runner"]
         },
         {
             "name": "Stop",
