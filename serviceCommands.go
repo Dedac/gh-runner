@@ -20,11 +20,9 @@ func runStart(name string) {
 
 func runStop(name string) {
 	//kill the 3 created processes
-	runner := fmt.Sprintf("%s/run.sh", name)
-	helper := fmt.Sprintf("%s/bin/Runner.Listener", name)
-	listener := fmt.Sprintf("%s/run-helper.sh", name)
+	runnerprocs := fmt.Sprintf("%[1]s/run.sh|%[1]s/bin/Runner.Listener|%[1]s/run-helper.sh", name)
 	//Find the pid of the runner
-	c1 := exec.Command("pgrep", "-f", runner, helper, listener)
+	c1 := exec.Command("pgrep", "-f", runnerprocs)
 	//kill the processes
 	c2 := exec.Command("xargs", "kill")
 	c2.Stdin, _ = c1.StdoutPipe()
