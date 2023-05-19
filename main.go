@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/cli/go-gh/v2/pkg/repository"
@@ -24,6 +25,9 @@ func _main() error {
 			repo, err = repository.Parse(*repoOverride)
 		} else {
 			repo, err = repository.Current()
+		}
+		if err != nil {
+			log.Fatal(err)
 		}
 		URL = fmt.Sprintf("https://%s/%s/%s", repo.Host, repo.Owner, repo.Name)
 		return

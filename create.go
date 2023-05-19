@@ -42,7 +42,7 @@ func runCreate(cmd *cobra.Command, repo repository.Repository, remove bool, fold
 		log.Fatal(err)
 	}
 
-	token := GetToken(repo, org, "", remove)
+	token := GetToken(repo, org, ent, remove)
 
 	var args []string
 	if remove {

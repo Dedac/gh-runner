@@ -36,6 +36,14 @@
             "program": ".",
             "args": ["create", "--org", "octodemo", "-N", "org-level-runner", "--labels", "temp,gh-runner"]
         },
+        {  
+            "name": "Enterprise",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": ".",
+            "args": ["create", "--enterprise", "fabrikam", "--labels", "temp,gh-runner", "-s"]
+        },
         {
             "name": "Remove",
             "type": "go",
