@@ -9,7 +9,12 @@ import (
 )
 
 func runStart(name string) {
-	runner := fmt.Sprintf("%s/run.sh", name)
+	var runner string
+	if runtime.GOOS != "windows" {
+		runner = fmt.Sprintf("%s/run.cmd", name)
+	} else {
+		runner = fmt.Sprintf("%s/run.sh", name)
+	}
 	runcmd := exec.Command(runner)
 	runcmd.Stdout = os.Stdout
 	runcmd.Stderr = os.Stderr
@@ -20,23 +25,28 @@ func runStart(name string) {
 }
 
 func runStop(name string) {
-	//kill the 3 created processes
-	runnerprocs := fmt.Sprintf("%[1]s/run.sh|%[1]s/bin/Runner.Listener|%[1]s/run-helper.sh", name)
-	//Find the pid of the runner
-	c1 := exec.Command("pgrep", "-f", runnerprocs)
-	//kill the processes
-	c2 := exec.Command("xargs", "kill")
-	c2.Stdin, _ = c1.StdoutPipe()
-	c2.Stdout = os.Stdout
-	_ = c2.Start()
-	err := c1.Run()
-	err2 := c2.Wait()
+	if runtime.GOOS != "windows" {
 
-	if err != nil {
-		log.Fatal(err)
-	}
-	if err2 != nil {
-		log.Fatal(err)
+		//kill the 3 created processes
+		runnerprocs := fmt.Sprintf("%[1]s/run.sh|%[1]s/bin/Runner.Listener|%[1]s/run-helper.sh", name)
+		//Find the pid of the runner
+		c1 := exec.Command("pgrep", "-f", runnerprocs)
+		//kill the processes
+		c2 := exec.Command("xargs", "kill")
+		c2.Stdin, _ = c1.StdoutPipe()
+		c2.Stdout = os.Stdout
+		_ = c2.Start()
+		err := c1.Run()
+		err2 := c2.Wait()
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		if err2 != nil {
+			log.Fatal(err)
+		}
+	} else {
+		//TODO: Implement stop for windows
 	}
 }
 
