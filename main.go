@@ -25,6 +25,9 @@ func _main() error {
 			repo, err = repository.Parse(*repoOverride)
 		} else {
 			repo, err = repository.Current()
+			if err != nil {
+				log.Fatal("If you are not in a repository, you must specify one with -R, if you are installing for an org or an enterprise you will still need a repository to get a host")
+			}
 		}
 		if err != nil {
 			log.Fatal(err)
