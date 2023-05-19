@@ -1,30 +1,25 @@
 package main
 
 import (
-	"compress/gzip"
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"runtime"
 
-	"github.com/artyom/untar"
 	"github.com/evilsocket/islazy/zip"
 )
 
 func ExtractToFolder(fileName string, folderName string) {
 	// extract the file to directory
 	if runtime.GOOS != "windows" {
-		file, err := os.Open(fileName)
+		folderCommand := exec.Command("mkdir", "-p", folderName)
+		err := folderCommand.Run()
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer file.Close()
-		fileStream, err := gzip.NewReader(file)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer fileStream.Close()
-		err = untar.Untar(fileStream, folderName)
+		extractcmd := exec.Command("tar", "xzf", fileName, "-C", folderName)
+		err = extractcmd.Run()
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -33,7 +28,7 @@ func ExtractToFolder(fileName string, folderName string) {
 	}
 	fmt.Printf("Extracted file %s to actions-runner directory \n", fileName)
 
-	// remove the compressed file
+	//remove the compressed file
 	err := os.Remove(fileName)
 	if err != nil {
 		log.Fatal(err)
