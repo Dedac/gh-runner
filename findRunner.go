@@ -6,11 +6,11 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/cli/go-gh"
+	"github.com/cli/go-gh/v2/pkg/api"
 )
 
 func FindRunner() (filename string, url string) {
-	ghRest, err := gh.RESTClient(nil)
+	ghRest, err := api.DefaultRESTClient()
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -4,7 +4,6 @@ go 1.20
 
 require (
 	github.com/artyom/untar v1.0.1
-	github.com/cli/go-gh v1.2.1
 	github.com/cli/go-gh/v2 v2.0.0
 	github.com/evilsocket/islazy v1.11.0
 	github.com/spf13/cobra v1.7.0

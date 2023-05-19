@@ -1,6 +1,6 @@
 {
 	"name": "GH-Runner",
-	"image": "mcr.microsoft.com/devcontainers/go:0-1-bullseye",
+	"image": "mcr.microsoft.com/devcontainers/go",
 	"customizations":{
 		"vscode": {
 			"extensions": [

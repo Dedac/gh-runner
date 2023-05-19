@@ -3,9 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
-	"strings"
 
-	"github.com/cli/go-gh"
+	"github.com/cli/go-gh/v2/pkg/api"
 	"github.com/cli/go-gh/v2/pkg/repository"
 )
 
@@ -27,10 +26,20 @@ func GetToken(repo repository.Repository, org string, ent string, remove bool) (
 	}
 
 	tokenGenCall := fmt.Sprintf("%s/actions/runners/%s", location, tokenType)
-
-	value, _, err := gh.Exec("api", "-X", "POST", tokenGenCall, "--jq", ".token")
+	ghRest, err := api.DefaultRESTClient()
 	if err != nil {
 		log.Fatal(err)
 	}
-	return strings.Split(value.String(), "\n")[0]
+	tokencontainer := struct {
+		Token string
+	}{}
+	//post with an empty body
+	err = ghRest.Post(tokenGenCall, nil, &tokencontainer)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if tokencontainer.Token == "" {
+		log.Fatal("Unable to get a valid token")
+	}
+	return tokencontainer.Token
 }
