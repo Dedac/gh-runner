@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"runtime"
 )
 
 func runStart(name string) {
@@ -46,7 +47,17 @@ func createService(name string) {
 	}
 
 	//Create a service to run the runner
-	runcmd := exec.Command("./svc.sh", "install")
+	var runcmd *exec.Cmd
+	if runtime.GOOS == "darwin" {
+		runcmd = exec.Command("./svc.sh", "install")
+	} else if runtime.GOOS == "linux" {
+		runcmd = exec.Command("sudo", "./svc.sh", "install")
+	} else if runtime.GOOS == "windows" {
+		log.Fatal("On windows, you must configure the service when creating the runner.")
+	} else {
+		log.Fatal("Unsupported OS")
+	}
+
 	runcmd.Stdout = os.Stdout
 	runcmd.Stderr = os.Stderr
 	err = runcmd.Run()
@@ -63,7 +74,16 @@ func runService(name string) {
 		log.Fatal(err)
 	}
 	//run the configured service
-	runcmd := exec.Command("./svc.sh", "start")
+	var runcmd *exec.Cmd
+	if runtime.GOOS == "darwin" {
+		runcmd = exec.Command("./svc.sh", "start")
+	} else if runtime.GOOS == "linux" {
+		runcmd = exec.Command("sudo", "./svc.sh", "start")
+	} else if runtime.GOOS == "windows" {
+		runcmd = exec.Command("Start-Service", "actions.runner.*")
+	} else {
+		log.Fatal("Unsupported OS")
+	}
 	runcmd.Stdout = os.Stdout
 	runcmd.Stderr = os.Stderr
 	err = runcmd.Run()
@@ -78,7 +98,16 @@ func stopService(name string) {
 		log.Fatal(err)
 	}
 	//Stop the running runner service
-	runcmd := exec.Command("./svc.sh", "stop")
+	var runcmd *exec.Cmd
+	if runtime.GOOS == "darwin" {
+		runcmd = exec.Command("./svc.sh", "stop")
+	} else if runtime.GOOS == "linux" {
+		runcmd = exec.Command("sudo", "./svc.sh", "stop")
+	} else if runtime.GOOS == "windows" {
+		runcmd = exec.Command("pwsh", "Stop-Service", "actions.runner.*")
+	} else {
+		log.Fatal("Unsupported OS")
+	}
 	runcmd.Stdout = os.Stdout
 	runcmd.Stderr = os.Stderr
 	err = runcmd.Run()
@@ -93,7 +122,16 @@ func removeService(name string) {
 		log.Fatal(err)
 	}
 	//Remove the service
-	runcmd := exec.Command("./svc.sh", "uninstall")
+	var runcmd *exec.Cmd
+	if runtime.GOOS == "darwin" {
+		runcmd = exec.Command("./svc.sh", "uninstall")
+	} else if runtime.GOOS == "linux" {
+		runcmd = exec.Command("sudo", "./svc.sh", "uninstall")
+	} else if runtime.GOOS == "windows" {
+		runcmd = exec.Command("pwsh", "Remove-Service", "actions.runner.*")
+	} else {
+		log.Fatal("Unsupported OS")
+	}
 	runcmd.Stdout = os.Stdout
 	runcmd.Stderr = os.Stderr
 	err = runcmd.Run()

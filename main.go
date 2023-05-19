@@ -16,8 +16,8 @@ func _main() error {
 		Use:   "runner <subcommand> [flags]",
 		Short: "gh runner",
 	}
-	repoOverride := rootCmd.PersistentFlags().StringP("repo", "R", "", "Repository to use in OWNER/REPO format")
-	name = rootCmd.PersistentFlags().StringP("name", "N", "actions-runner", "Name of the runner, creates a folder and a runner with this name, defualts to 'actions-runner' \n When you set a name, you will need to use that name for all subsequent commands commands to that runner")
+	repoOverride := rootCmd.PersistentFlags().StringP("repo", "R", "", "Repository to use in OWNER/REPO format, defaults to the current repository")
+	name = rootCmd.PersistentFlags().StringP("name", "N", "actions-runner", "Name of the runner, creates a folder and a runner with this name, defualts to 'actions-runner' \nWhen you set a name, you will need to use that name for all subsequent commands commands to that runner")
 
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) (err error) {
 		if *repoOverride != "" {
@@ -61,8 +61,21 @@ func _main() error {
 		},
 	}
 
+	removeCmd := &cobra.Command{
+		Use:   "remove",
+		Short: "Remove configuration and runner",
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			return runCreate(cmd, repo, true, *name, URL)
+		},
+	}
+
 	serviceCmd := &cobra.Command{
 		Use:   "service",
+		Short: "Manage the runner with a machine-level service",
+	}
+
+	serviceCreateCmd := &cobra.Command{
+		Use:   "create",
 		Short: "create a service (and start it) on this machine to keep the runner running",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			createService(*name)
@@ -71,7 +84,7 @@ func _main() error {
 	}
 
 	serviceStartCmd := &cobra.Command{
-		Use:   "serviceStart",
+		Use:   "start",
 		Short: "create a service (and start it) on this machine to keep the runner running",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			runService(*name)
@@ -80,7 +93,7 @@ func _main() error {
 	}
 
 	serviceStopCmd := &cobra.Command{
-		Use:   "serviceStop",
+		Use:   "stop",
 		Short: "Stop the runner configured on this machine",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			stopService(*name)
@@ -89,19 +102,11 @@ func _main() error {
 	}
 
 	serviceRemoveCmd := &cobra.Command{
-		Use:   "serviceRemove",
+		Use:   "remove",
 		Short: "Remove the service configured on this machine, ",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			removeService(*name)
 			return
-		},
-	}
-
-	removeCmd := &cobra.Command{
-		Use:   "remove",
-		Short: "Remove configuration and runner",
-		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			return runCreate(cmd, repo, true, *name, URL)
 		},
 	}
 
@@ -112,9 +117,10 @@ func _main() error {
 	rootCmd.AddCommand(stopCmd)
 	rootCmd.AddCommand(removeCmd)
 	rootCmd.AddCommand(serviceCmd)
-	rootCmd.AddCommand(serviceStartCmd)
-	rootCmd.AddCommand(serviceStopCmd)
-	rootCmd.AddCommand(serviceRemoveCmd)
+	serviceCmd.AddCommand(serviceCreateCmd)
+	serviceCmd.AddCommand(serviceStartCmd)
+	serviceCmd.AddCommand(serviceStopCmd)
+	serviceCmd.AddCommand(serviceRemoveCmd)
 
 	return rootCmd.Execute()
 }
