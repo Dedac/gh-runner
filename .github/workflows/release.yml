@@ -14,4 +14,5 @@ jobs:
       - uses: cli/gh-extension-precompile@v1
         with:
           go_version: "1.20"
-          CGO_ENABLED: "1"
+        env:
+          CGO_ENABLED: 1
