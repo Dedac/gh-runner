@@ -26,7 +26,6 @@ func runStart(name string) {
 
 func runStop(name string) {
 	if runtime.GOOS != "windows" {
-
 		//kill the 3 created processes
 		runnerprocs := fmt.Sprintf("%[1]s/run.sh|%[1]s/bin/Runner.Listener|%[1]s/run-helper.sh", name)
 		//Find the pid of the runner
@@ -46,7 +45,15 @@ func runStop(name string) {
 			log.Fatal(err)
 		}
 	} else {
-		//TODO: Implement stop for windows
+		//TODO: Implement a better stop for windows
+		c1 := exec.Command("Stop-Process", "-Name", "Runner.Listener")
+		//kill the processes
+		c1.Stdout = os.Stdout
+		c1.Stderr = os.Stderr
+		err := c1.Run()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
@@ -63,7 +70,7 @@ func createService(name string) {
 	} else if runtime.GOOS == "linux" {
 		runcmd = exec.Command("sudo", "./svc.sh", "install")
 	} else if runtime.GOOS == "windows" {
-		log.Fatal("On windows, you must configure the service when creating the runner.")
+		log.Fatal("On Windows, you must configure the service when creating the runner.  Remove the runner and re-create it with the --windows-service flag")
 	} else {
 		log.Fatal("Unsupported OS")
 	}
@@ -138,7 +145,7 @@ func removeService(name string) {
 	} else if runtime.GOOS == "linux" {
 		runcmd = exec.Command("sudo", "./svc.sh", "uninstall")
 	} else if runtime.GOOS == "windows" {
-		runcmd = exec.Command("powershell", "Remove-Service", "actions.runner.*")
+		log.Fatal("On Windows, remove the runner to remove the service.")
 	} else {
 		log.Fatal("Unsupported OS")
 	}

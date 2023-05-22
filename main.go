@@ -50,7 +50,7 @@ func _main() error {
 	createCmd.Flags().StringP("group", "g", "", "Runner group to add the runner to, defaults to 'Default'")
 	createCmd.Flags().BoolP("replace", "r", false, "Replace any existing runner with the same name")
 	createCmd.Flags().BoolP("skip-download", "s", false, "Skip downloading the runner binary, because you already have one extracted in the current directory")
-	createCmd.Flags().BoolP("windows-service", "w", false, "Install the runner as a Windows Service (Windows only, requires admin privileges, use service create on linux and MacOS)")
+	createCmd.Flags().BoolP("windows-service", "w", false, "Install the runner as a Windows Service (Windows only, requires admin privileges, use `gh runner service create` on linux and MacOS)")
 	createCmd.Flags().String("windowslogonaccount", "", "The logon account to use for the service (Windows only)")
 	createCmd.Flags().String("windowslogonpassword", "", "The logon password to use for the service (Windows only)")
 
@@ -87,7 +87,7 @@ func _main() error {
 
 	serviceCreateCmd := &cobra.Command{
 		Use:   "create",
-		Short: "create a service (and start it) on this machine to keep the runner running",
+		Short: "create a service (and start it) on this machine to keep the runner running (linux and MacOS only)",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			createService(*name)
 			return
@@ -114,7 +114,7 @@ func _main() error {
 
 	serviceRemoveCmd := &cobra.Command{
 		Use:   "remove",
-		Short: "Remove the service configured on this machine, ",
+		Short: "Remove the service configured on this machine (On Windows, remove the runner to remove the service) ",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			removeService(*name)
 			return
