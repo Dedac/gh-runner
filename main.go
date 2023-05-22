@@ -48,7 +48,11 @@ func _main() error {
 	createCmd.Flags().StringP("enterprise", "e", "", "Add the runner at the Enterprise level with the enterprise's name")
 	createCmd.Flags().StringP("labels", "l", "", "Comma-separated list of labels to add to the runner")
 	createCmd.Flags().StringP("group", "g", "", "Runner group to add the runner to, defaults to 'Default'")
+	createCmd.Flags().BoolP("replace", "r", false, "Replace any existing runner with the same name")
 	createCmd.Flags().BoolP("skip-download", "s", false, "Skip downloading the runner binary, because you already have one extracted in the current directory")
+	createCmd.Flags().BoolP("windows-service", "w", false, "Install the runner as a Windows Service (Windows only, requires admin privileges, use service create on linux and MacOS)")
+	createCmd.Flags().String("windowslogonaccount", "", "The logon account to use for the service (Windows only)")
+	createCmd.Flags().String("windowslogonpassword", "", "The logon password to use for the service (Windows only)")
 
 	startCmd := &cobra.Command{
 		Use:   "start",

@@ -11,9 +11,9 @@ import (
 func runStart(name string) {
 	var runner string
 	if runtime.GOOS != "windows" {
-		runner = fmt.Sprintf("%s/run.cmd", name)
-	} else {
 		runner = fmt.Sprintf("%s/run.sh", name)
+	} else {
+		runner = fmt.Sprintf(".\\%s\\run.cmd", name)
 	}
 	runcmd := exec.Command(runner)
 	runcmd.Stdout = os.Stdout
@@ -90,7 +90,7 @@ func runService(name string) {
 	} else if runtime.GOOS == "linux" {
 		runcmd = exec.Command("sudo", "./svc.sh", "start")
 	} else if runtime.GOOS == "windows" {
-		runcmd = exec.Command("Start-Service", "actions.runner.*")
+		runcmd = exec.Command("powershell", "Start-Service", "actions.runner.*")
 	} else {
 		log.Fatal("Unsupported OS")
 	}
@@ -114,7 +114,7 @@ func stopService(name string) {
 	} else if runtime.GOOS == "linux" {
 		runcmd = exec.Command("sudo", "./svc.sh", "stop")
 	} else if runtime.GOOS == "windows" {
-		runcmd = exec.Command("pwsh", "Stop-Service", "actions.runner.*")
+		runcmd = exec.Command("powershell", "Stop-Service", "actions.runner.*")
 	} else {
 		log.Fatal("Unsupported OS")
 	}
@@ -138,7 +138,7 @@ func removeService(name string) {
 	} else if runtime.GOOS == "linux" {
 		runcmd = exec.Command("sudo", "./svc.sh", "uninstall")
 	} else if runtime.GOOS == "windows" {
-		runcmd = exec.Command("pwsh", "Remove-Service", "actions.runner.*")
+		runcmd = exec.Command("powershell", "Remove-Service", "actions.runner.*")
 	} else {
 		log.Fatal("Unsupported OS")
 	}
